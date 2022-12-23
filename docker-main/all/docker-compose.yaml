@@ -1,0 +1,340 @@
+version: '3.5'
+
+volumes:
+  # ---
+
+  db_mongo:
+  db_postgre:
+
+  # ---
+
+  zookeeper:
+  kafka:
+
+  # ---
+
+  market_authorization_service:
+  market_blog_service:
+  market_email_service:
+  market_gateway_service:
+  market_profiles_service:
+  market_eureka_service:
+  market_deal_service:
+  market_documentation_service:
+  #  market_ads_service:
+  #  market_notification_service:
+  #  market_storage_service:
+  #  market_social_service:
+  # market_statistics_service:
+
+  # ---
+
+networks:
+  market_net:
+    external: false
+    name: market_net
+
+services:
+
+  # --- db ---
+  db_adminer:
+    container_name: db_adminer
+    image: adminer:latest
+    build:
+      context: ../docker-script/adminer
+      dockerfile: Docker file
+    restart: always
+    environment:
+      ADMINER_DESIGN: 'pappu687'
+      MONGO_HOST: mongo_server
+      POSTRGRE_HOST: postgre_server
+    ports:
+      - "80:8080"
+    networks:
+      - market_net
+    links:
+      - db_mongo:mongo_server
+      - db_postgre:postgre_server
+
+  db_postgre:
+    container_name: db_postgre
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: market
+    ports:
+      - "5433:5432"
+    networks:
+      - market_net
+    volumes:
+      - db_postgre:/var/lib/postgresql/data
+
+  db_adminer_mongo:
+    container_name: db_adminer_mongo
+    image: mongo-express
+    restart: always
+    depends_on:
+      - db_mongo
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@db_mongo:27017/
+    ports:
+      - "81:8081"
+    networks:
+      - market_net
+
+  db_mongo:
+    container_name: db_mongo
+    image: mongo
+    restart: always
+    command: --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: market
+    ports:
+      - "27017:27017"
+    networks:
+      - market_net
+    volumes:
+      - db_mongo:/data/db
+      - db_mongo:/data/configdb
+
+
+
+  # services for my own services
+
+  zookeeper:
+    image: zookeeper:3.7.0
+    container_name: zookeeper
+    restart: "no"
+    networks:
+      - market_net
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: obsidiandynamics/kafka
+    container_name: kafka
+    restart: "no"
+    networks:
+      - market_net
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+    #      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
+    #      KAFKA_LISTENERS: DOCKER_INTERNAL://:9092,DOCKER_EXTERNAL://:29092
+    #      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:9092,DOCKER_EXTERNAL://localhost:29092
+    #      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
+    #      KAFKA_BROKER_ID: 1
+    #      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka:/etc/kafka/secrets
+      - kafka:/var/lib/kafka/data
+
+
+  # my own services
+
+  market-authorization-service:
+    container_name: market-authorization-service
+    build:
+      context: ../../market-authorization-service
+      dockerfile: Dockerfile
+    depends_on:
+      - market-eureka-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+    ports:
+      - 8082:8082
+    networks:
+      - market_net
+
+#  market-blog-service:
+#    container_name: market-blog-service
+#    build:
+#      context: ../../market-blog-service
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - market-eureka-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+#    ports:
+#      - 8095:8095
+#    networks:
+#      - market-net
+
+#  market-email-service:
+#    container_name: market-email-service
+#    build:
+#      context: ../../market-email-service
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - market-eureka-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+#    ports:
+#      - 8084:8084
+#    networks:
+#      - market-net
+
+#  market-gateway_service:
+#    container_name: market-gateway_service
+#    build:
+#      context: ../../market-gateway-service
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - market-eureka-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+#    ports:
+#      - 4442:4442
+#    networks:
+#      - market-net
+
+#  market-profiles-service:
+#    container_name: market-profiles-service
+#    build:
+#      context: ../../market-profiles-service
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - market-eureka-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+#    ports:
+#      - 8087:8087
+#    networks:
+#      - market_net
+
+
+  market-eureka-service:
+    container_name: market-eureka-service
+    build:
+      context: ../../marketeurekaserver
+      dockerfile: Dockerfile
+    ports:
+      - 8761:8761
+    expose:
+      - 8761
+    networks:
+      - market_net
+
+#  market-documentation-service:
+#    container_name: market-documentation-service
+#    build:
+#      context: ../../market-documentation-project
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - market-eureka-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+#    ports:
+#      - 8888:8888
+#    networks:
+#      - market-net
+
+#  market-deal-service:
+#    container_name: market-deal-service
+#    build:
+#      context: ../../market-deal-service
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - market-eureka-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+#    ports:
+#      - 8090:8090
+#    networks:
+#      - market-net
+
+    #  market-statistics-service:
+    #    container_name: market-statistics-service
+    #    build:
+    #      context: ../../market-statistics-service
+    #      dockerfile: Dockerfile
+    #    depends_on:
+    #      - market-eureka-service
+    #    environment:
+    #      SPRING_PROFILES_ACTIVE: docker
+    #      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+    #    ports:
+    #      - 8089:8089
+    #    networks:
+    #      - market-net
+
+
+    #  market-social-service:
+    #    container_name: market-social-service
+    #    build:
+    #      context: ../../social-market-service
+    #      dockerfile: Dockerfile
+    #    depends_on:
+    #      - market-eureka-service
+    #    environment:
+    #      SPRING_PROFILES_ACTIVE: docker
+    #      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+    #    ports:
+    #      - 0000:0000
+    #    networks:
+    #      - market-net
+
+    #  market-storage-service:
+    #    container_name: market-storage-service
+    #    build:
+    #      context: ../../market-storage-service
+    #      dockerfile: Dockerfile
+    #    depends_on:
+    #      - market-eureka-service
+    #    environment:
+    #      SPRING_PROFILES_ACTIVE: docker
+    #      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+    #    ports:
+    #      - 8088:8088
+    #    networks:
+    #      - market-net
+
+    #  market-notification-service:
+    #    container_name: market-notification-service
+    #    build:
+    #      context: ../../market-notification-service
+    #      dockerfile: Dockerfile
+    #    depends_on:
+    #      - market-eureka-service
+    #    environment:
+    #      SPRING_PROFILES_ACTIVE: docker
+    #      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+    #    ports:
+    #      - 8085:8085
+    #    networks:
+    #      - market-net
+
+  #  market-ads-service:
+  #    container_name: market-ads-service
+  #    build:
+  #      context: ../../market-ads-service
+  #      dockerfile: Dockerfile
+  #    depends_on:
+  #      - market-eureka-service
+  #    environment:
+  #      SPRING_PROFILES_ACTIVE: docker
+  #      SPRING_APPLICATION_JSON: '{"eureka":{"client":{"serviceUrl":{"defaultZone":"http://market-eureka-service:8761/eureka"}}}}'
+  #    ports:
+  #      - 8081:8081
+  #    networks:
+  #      - market-net

@@ -1,0 +1,25 @@
+server:
+  port: 8087
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springfox:
+  documentation:
+    swaggerUi:
+      baseUrl: /api/doc
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: market-profiles
+  cloud:
+    stream:
+      bindings:
+        profileCreateEventProcessor-in-0:
+          destination: account_created
+      kafka:
+        binder:
+          autoAddPartitions: true

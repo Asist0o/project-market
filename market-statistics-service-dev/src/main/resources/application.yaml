@@ -1,0 +1,18 @@
+server:
+  port: 8089
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springfox:
+  documentation:
+    swaggerUi:
+      baseUrl: /api/doc
+
+spring:
+  profiles:
+    active: native
+  application:
+    name: market-statistics

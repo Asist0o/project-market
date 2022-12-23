@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="change-name-table" author="Troyanovskiy">
+        <renameTable oldTableName="advertisements" newTableName="advertisement"/>
+    </changeSet>
+    <changeSet id="change-name-table2" author="Troyanovskiy">
+        <renameTable oldTableName="items" newTableName="item"/>
+    </changeSet>
+    <changeSet id="change-name-from-item_subcategories-to-item_subcategory" author="Troyanovskiy">
+        <renameTable oldTableName="item_subcategories" newTableName="item_subcategory"/>
+    </changeSet>
+    <changeSet id="change-name-table3" author="Troyanovskiy">
+        <renameTable oldTableName="sizenames" newTableName="size_name"/>
+    </changeSet>
+    <changeSet id="change-type-1" author="Troyanovskiy">
+        <modifyDataType tableName="item" columnName="item_condition" newDataType="character varying(25)"/>
+    </changeSet>
+    <changeSet id="change-type-2" author="Troyanovskiy">
+        <modifyDataType tableName="item_subcategory" columnName="gender_type" newDataType="character varying(255)"/>
+    </changeSet>
+    <changeSet id="change-type-3" author="Troyanovskiy">
+        <modifyDataType tableName="item_subcategory" columnName="item_category_name" newDataType="character varying(255)"/>
+    </changeSet>
+    <changeSet id="remove enums in sql" author="Troyanovskiy">
+        <sql>DROP TYPE gender_type CASCADE;</sql>
+        <sql>DROP TYPE item_category_name_type CASCADE;</sql>
+        <sql>DROP TYPE item_condition_type CASCADE;</sql>
+    </changeSet>
+    <changeSet id="add-column-approvedStatus" author="Troyanovskiy">
+        <addColumn tableName="advertisement">
+            <column name="approved_status" type="character varying(255)"/>
+        </addColumn>
+        <sql
+        >UPDATE advertisement
+            SET approved_status = 'На проверке'
+            WHERE approved_status IS NULL
+        </sql>
+    </changeSet>
+    <changeSet id="add not null constraint" author="Troyanovskiy">
+        <addNotNullConstraint tableName="item" columnName="item_condition"/>
+        <addNotNullConstraint tableName="item_subcategory" columnName="gender_type"/>
+        <addNotNullConstraint tableName="item_subcategory" columnName="item_category_name"/>
+        <addNotNullConstraint tableName="advertisement" columnName="approved_status"/>
+    </changeSet>
+    <changeSet id="rename-approved-column" author="Troyanoskiy">
+        <renameColumn tableName="advertisement" oldColumnName="approved_status" newColumnName="is_approved"/>
+    </changeSet>
+
+
+</databaseChangeLog>

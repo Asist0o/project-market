@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/market-ads-service-dev/ads-service.iml" filepath="$PROJECT_DIR$/market-ads-service-dev/ads-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-blog-service-main/blog-service.iml" filepath="$PROJECT_DIR$/market-blog-service-main/blog-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-deal-service-dev/deal-service.iml" filepath="$PROJECT_DIR$/market-deal-service-dev/deal-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-email-service-dev/email-service.iml" filepath="$PROJECT_DIR$/market-email-service-dev/email-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/marketeurekaserver-dev/eureka-server.iml" filepath="$PROJECT_DIR$/marketeurekaserver-dev/eureka-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-storage-service-dev/files-storage-service.iml" filepath="$PROJECT_DIR$/market-storage-service-dev/files-storage-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-gateway-service-dev/gateway.iml" filepath="$PROJECT_DIR$/market-gateway-service-dev/gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-authorization-service-dev/market-authorization-service.iml" filepath="$PROJECT_DIR$/market-authorization-service-dev/market-authorization-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-documentation-project-main/market-documentation-service.iml" filepath="$PROJECT_DIR$/market-documentation-project-main/market-documentation-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microservice-initializer-dev/microservice-initializer.iml" filepath="$PROJECT_DIR$/microservice-initializer-dev/microservice-initializer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/market-profiles-service-dev/profiles-service.iml" filepath="$PROJECT_DIR$/market-profiles-service-dev/profiles-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/project-market.iml" filepath="$PROJECT_DIR$/.idea/project-market.iml" />
+      <module fileurl="file://$PROJECT_DIR$/social-market-service-master/social-market-service.iml" filepath="$PROJECT_DIR$/social-market-service-master/social-market-service.iml" />
+    </modules>
+  </component>
+</project>

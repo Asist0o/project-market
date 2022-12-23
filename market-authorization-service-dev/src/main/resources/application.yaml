@@ -1,0 +1,51 @@
+server:
+  port: 8082
+
+topic:
+  name: account_created
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springfox:
+  documentation:
+    swaggerUi:
+      baseUrl: /api/doc
+
+spring:
+  autoconfigure:
+    exclude[0]: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+  #    exclude[1]: org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+  profiles:
+    active: dev
+  application:
+    name: market-authorization
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:/db/changelog-authorization-service/db.changelog-master.xml
+    default-schema: public
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          vk:
+#            client-id: ${vk.client.id}
+#            client-secret: ${vk.client.secret}
+#            authorization-grant-type: authorization_code
+#            redirectUri: "http://localhost:8082/api/auth/oauth2/callback/{registrationId}"
+#            scope: email
+#        provider:
+#          vk:
+#            authorizationUri: https://oauth.vk.com/authorize?v=${vk.client.api.version}
+#            tokenUri: https://oauth.vk.com/access_token
+#            userInfoUri: https://api.vk.com/method/users.get?v=${vk.client.api.version}&{user_id}
+#            user-name-attribute: "user_id"
+
+#JWT token
+jwt:
+  token:
+    expiration: 1800000
+    secret: vPhiUi99h/wprHc3yo6PEX3xaF+riErC7qQPtzgyjPkKjaHZfL9U1EoWM0Qh8aCefrLqK0F4EaA1ojKN3asIHyUOQmmDa7pzRNoydW3DKaMKWDkGqBPt9ijdd8raawH5KahULQ==

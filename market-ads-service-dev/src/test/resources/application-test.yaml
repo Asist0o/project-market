@@ -1,0 +1,17 @@
+
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:14.3:///integration-test-db
+    password: test
+    username: test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  liquibase:
+    change-log: db/changelog-ads-service/db.changelog-master.xml
+    enabled: true

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="change-table-Deal-name" author="Troyanovskiy">
+        <renameTable oldTableName="deals" newTableName="deal"/>
+    </changeSet>
+    <changeSet id="modifyData-status_deal_and_type_deal" author="Troyanovskiy">
+        <modifyDataType tableName="deal" columnName="status_deal" newDataType="character varying(255)"/>
+        <modifyDataType tableName="deal" columnName="type_deal" newDataType="character varying(255)"/>
+    </changeSet>
+    <changeSet id="remove_enums_from_db" author="Troyanovskiy">
+        <sql>DROP TYPE deal_status_type CASCADE;</sql>
+        <sql>DROP TYPE typedeal_type CASCADE;</sql>
+    </changeSet>
+</databaseChangeLog>

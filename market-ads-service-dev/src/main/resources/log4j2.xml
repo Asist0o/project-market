@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF">
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d{yyyy:MM:dd HH:mm:ss}: %highlight{%-5p}{FATAL=magenta, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue}: %c{1}:%L line- %msg%n%throwable"
+            />
+        </Console>
+
+        <File name="file" fileName="/market/logs/ads-service.log">
+            <PatternLayout
+                    pattern="%d{yyyy:MM:dd HH:mm:ss}: %-5level:%c{1}:%L line- %msg%n%throwable"
+            />
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <root level="WARN">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="file"/>
+        </root>
+    </Loggers>
+
+</Configuration>

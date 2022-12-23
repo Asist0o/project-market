@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:9.6:///
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  liquibase:
+    enabled: true
+    change-log: db/changelog-profiles-service/db.changelog-master.xml

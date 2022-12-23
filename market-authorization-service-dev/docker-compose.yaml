@@ -1,0 +1,275 @@
+version: '3.1'
+
+volumes:
+  # ---
+
+  db_mongo:
+  db_postgre:
+
+  # ---
+
+  zookeeper:
+  kafka:
+
+  # ---
+
+  market_authorization_service:
+  market_blog_service:
+  market_email_service:
+  market_gateway_service:
+  market_profiles_service:
+  market_eureka_service:
+  #  market_statistics_service:
+  #  market_ads_service:
+  #  market_deal_service:
+  #  market_documentation_service:
+  #  market_notification_service:
+  #  market_storage_service:
+  #  market_social_service:
+
+  # ---
+
+networks:
+  market_net:
+    name: market_net
+    driver: bridge
+
+services:
+
+  # services for database
+
+  db_adminer:
+    container_name: db_adminer
+    image: adminer:latest
+    build:
+      context: docker-script/adminer
+      dockerfile: docker-script/adminer/Dockerfile
+    restart: always
+    environment:
+      ADMINER_DESIGN: 'pappu687'
+      #      MONGO_HOST: mongo_server
+      POSTRGRE_HOST: postgre_server
+    ports:
+      - 80:8080
+    networks:
+      - market_net
+    links:
+      #      - db_mongo:mongo_server
+      - db_postgre:postgre_server
+
+  db_postgre:
+    container_name: db_postgre
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: market
+    ports:
+      - 5432:5432
+    networks:
+      - market_net
+    volumes:
+      - db_postgre:/var/lib/postgresql/data
+
+  db_adminer_mongo:
+    container_name: db_adminer_mongo
+    image: mongo-express
+    restart: always
+    depends_on:
+      - db_mongo
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@db_mongo:27017/
+    ports:
+      - 81:8081
+    networks:
+      - market_net
+
+  db_mongo:
+    container_name: db_mongo
+    image: mongo
+    restart: always
+    command: --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: market
+    ports:
+      - 27017:27017
+    networks:
+      - market_net
+    volumes:
+      - db_mongo:/data/db
+      - db_mongo:/data/configdb
+
+
+
+  # services for my own services
+
+  zookeeper:
+    image: zookeeper:3.7.0
+    container_name: zookeeper
+    restart: "no"
+    networks:
+      - market_net
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: obsidiandynamics/kafka
+    container_name: kafka
+    restart: "no"
+    networks:
+      - market_net
+    ports:
+      - "9092:29092"
+    environment:
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: DOCKER_INTERNAL://:9092,DOCKER_EXTERNAL://:29092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:9092,DOCKER_EXTERNAL://localhost:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+    #      KAFKA_BROKER_ID: 1
+    #      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka:/etc/kafka/secrets
+      - kafka:/var/lib/kafka/data
+
+
+  # my own services
+
+  market_authorization_service:
+    container_name: market_authorization_service
+    build:
+      context: ""
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    networks:
+      - market_net
+
+  market_blog_service:
+    container_name: market_blog_service
+    build:
+      context: ./market-blog-service
+      dockerfile: Dockerfile
+    ports:
+      - 8095:8095
+    networks:
+      - market_net
+
+  market_email_service:
+    container_name: market_email_service
+    build:
+      context: ./market-email-service
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8084
+    networks:
+      - market_net
+
+  market_gateway_service:
+    container_name: market_gateway_service
+    build:
+      context: ./market-gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - 4442:4442
+    networks:
+      - market_net
+
+  market_profiles_service:
+    container_name: market_profiles_service
+    build:
+      context: ../market-profiles-service
+      dockerfile: ../market-profiles-service/Dockerfile
+    ports:
+      - 8087:8087
+    networks:
+      - market_net
+
+  market_eureka_service:
+    container_name: market_eureka_service
+    build:
+      context: ./marketeurekaserver
+      dockerfile: Dockerfile
+    ports:
+      - 8761:8761
+    networks:
+      - market_net
+
+
+  #  market_statistics_service:
+  #    container_name: market_statistics_service
+  #    build:
+  #      context: ./market-statistics-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 8089:8089
+  #    networks:
+  #      - market_net
+
+
+  #  market_social_service:
+  #    container_name: market_social_service
+  #    build:
+  #      context: ./social-market-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 0000:0000
+  #    networks:
+  #      - market_net
+
+  #  market_storage_service:
+  #    container_name: market_storage_service
+  #    build:
+  #      context: ./market-storage-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 8088:8088
+  #    networks:
+  #      - market_net
+
+  #  market_notification_service:
+  #    container_name: market_notification_service
+  #    build:
+  #      context: ./market-notification-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 8085:8085
+  #    networks:
+  #      - market_net
+
+  #  market_deal_service:
+  #    container_name: market_deal_service
+  #    build:
+  #      context: ./market-deal-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 8090:8090
+  #    networks:
+  #      - market_net
+
+  #  market_documentation_service:
+  #    container_name: market_documentation_service
+  #    build:
+  #      context: ./market-documentation-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 8888:8888
+  #    networks:
+  #      - market_net
+
+  #  market_ads_service:
+  #    container_name: market_ads_service
+  #    build:
+  #      context: ./market-ads-service
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - 8081:8081
+  #    networks:
+  #      - market_net

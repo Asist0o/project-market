@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="create-genderType-enum" author="Troyanovskiy">
+        <sql>CREATE TYPE gender_type AS ENUM ('Мужской','Женский')</sql>
+        <sql>CREATE CAST (character varying as gender_type) WITH INOUT AS IMPLICIT</sql>
+    </changeSet>
+
+    <changeSet id="create-itemCategoryName-enum" author="Troyanovskiy">
+        <sql>CREATE TYPE item_category_name_type AS ENUM ('Обувь', 'Верх',
+            'Верхняя одежда', 'Низ', 'Аксессуары')</sql>
+        <sql>CREATE CAST (character varying as item_category_name_type) WITH INOUT AS IMPLICIT</sql>
+    </changeSet>
+
+    <changeSet id="create-itemCondition-enum" author="Troyanovskiy">
+        <sql>CREATE TYPE item_condition_type AS ENUM ('Новая с биркой', 'Новая без бирки',
+            'Есть дефекты', 'Надевалась один раз', 'Надевалась несколько раз')</sql>
+        <sql>CREATE CAST (character varying as item_condition_type) WITH INOUT AS IMPLICIT</sql>
+    </changeSet>
+
+    <changeSet id="create-sizenames-table" author="Troyanovskiy">
+        <createTable tableName="sizenames">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/></column>
+            <column name="name" type="character varying(255)">
+                <constraints nullable="false" unique="true"/></column>
+        </createTable>
+        <createSequence sequenceName="sizename_id_seq"/>
+    </changeSet>
+
+    <changeSet id="create-item_subcategories-table" author="Troyanovskiy">
+        <createTable tableName="item_subcategories">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/></column>
+            <column name="gender_type" type="gender_type"/>
+            <column name="item_category_name" type="item_category_name_type"/>
+            <column name="subcategory_name" type="character varying(255)"/>
+        </createTable>
+        <addNotNullConstraint tableName="item_subcategories"
+                              columnName="subcategory_name"/>
+        <addUniqueConstraint tableName="item_subcategories"
+                             columnNames="gender_type, item_category_name"/>
+        <createSequence sequenceName="item_subcategories_id_seq"/>
+    </changeSet>
+
+    <changeSet id="create-item_subcategories_sizenames-table" author="Troyanovskiy">
+        <createTable tableName="item_subcategories_sizenames">
+            <column name="subcategory_id" type="bigint">
+                <constraints foreignKeyName="item_subcategories_sizenames_subcategory_id_item_subcategories_id"
+                             references="item_subcategories(id)" nullable="false"/></column>
+            <column name="sizename_id" type="bigint">
+                <constraints foreignKeyName="item_subcategories_sizenames_sizename_id_sizenames_id"
+                             references="sizenames(id)" nullable="false"/></column>
+        </createTable>
+        <addUniqueConstraint tableName="item_subcategories_sizenames" columnNames="subcategory_id, sizename_id"/>
+    </changeSet>
+
+    <changeSet id="create-items-table" author="Troyanovskiy">
+        <createTable tableName="items">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="brand" type="character varying(255)">
+                <constraints nullable="false"/></column>
+            <column name="model" type="character varying(255)">
+                <constraints nullable="false"/></column>
+            <column name="price" type="bigint">
+                <constraints nullable="false"/></column>
+            <column name="item_condition" type="item_condition_type"/>
+            <column name="item_subcategory_id" type="bigint">
+                <constraints foreignKeyName="items_item_subcategory_id_item_subcategories_id"
+                             references="item_subcategories(id)" nullable="false"/>
+            </column>
+            <column name="sizename_id" type="bigint">
+                <constraints foreignKeyName="items_sizename_id_sizenames_id"
+                             references="sizenames(id)" nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="items_id_seq"/>
+    </changeSet>
+
+    <changeSet id="create-advertisements-table" author="Troyanovskiy">
+        <createTable tableName="advertisements">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="description" type="character varying(255)"/>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/></column>
+            <column name="created_by" type="bigint">
+                <constraints nullable="false"/></column>
+            <column name="is_archived" type="boolean" defaultValue="false">
+                <constraints nullable="false"/></column>
+            <column name="item_id" type="bigint">
+                <constraints foreignKeyName="advertisements_item_id_items_id"
+                             references="items(id)" nullable="false"/></column>
+
+        </createTable>
+        <createSequence sequenceName="advertisements_id_seq"/>
+    </changeSet>
+
+    <changeSet id="create-advertisement_likes-table" author="Troyanovskiy">
+        <createTable tableName="advertisement_likes">
+            <column name="advertisement_id" type="bigint">
+                <constraints foreignKeyName="advertisement_likes_advertisement_id_advertisements_id"
+                             references="advertisements(id)"/>
+            </column>
+            <column name="likes" type="bigint"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-advertisement_pictures-table" author="Troyanovskiy">
+        <createTable tableName="advertisement_pictures">
+            <column name="advertisement_id" type="bigint">
+                <constraints foreignKeyName="advertisement_pictures_advertisement_id_advertisements_id"
+                             references="advertisements(id)"/>
+            </column>
+            <column name="pictures" type="bigint"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-advertisement_priority-table" author="Krasnoperov">
+        <createTable tableName="advertisement_expiration_date">
+            <column name="advertisement_id" type="bigint">
+                <constraints foreignKeyName="advertisement_id_priority"
+                             references="advertisements(id)"/>
+            </column>
+            <column name="expiration_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

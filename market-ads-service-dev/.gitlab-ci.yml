@@ -1,0 +1,22 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+
+  CI_REGISTRY: docker.io
+  CI_REGISTRY_IMAGE: index.docker.io/741147643475/ads-service
+  CI_REGISTRY_PASSWORD: katakatamarket2022
+  CI_REGISTRY_USER: 741147643475
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
+  except:
+    - masterdocker

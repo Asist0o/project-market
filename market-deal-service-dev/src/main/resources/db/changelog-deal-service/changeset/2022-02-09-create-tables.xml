@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <changeSet id="create-deal_status-enum" author="Troyanovskiy">
+        <sql>CREATE TYPE deal_status_type AS ENUM ('Активна','Завершена успешно', 'Завершена неуспешно')</sql>
+        <sql>CREATE CAST (character varying as deal_status_type) WITH INOUT AS IMPLICIT</sql>
+    </changeSet>
+    <changeSet id="create-type_deal-enum" author="Troyanovskiy">
+        <sql>CREATE TYPE typedeal_type AS ENUM ('Личная встреча','Отправка почтой')</sql>
+        <sql>CREATE CAST (character varying as typedeal_type) WITH INOUT AS IMPLICIT</sql>
+    </changeSet>
+    <changeSet id="create-deals-table" author="Troyanovskiy">
+        <createTable tableName="deals">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="id_producer" type="bigint">
+                <constraints nullable="false"/></column>
+            <column name="id_consumer" type="bigint">
+                <constraints nullable="false"/></column>
+            <column name="id_advertisement" type="bigint">
+                <constraints nullable="false"/></column>
+            <column name="price" type="bigint">
+                <constraints nullable="false"/></column>
+            <column name="status_deal" type="deal_status_type"/>
+            <column name="type_deal" type="typedeal_type"/>
+        </createTable>
+        <createSequence sequenceName="deal_id_seq"/>
+    </changeSet>
+</databaseChangeLog>
