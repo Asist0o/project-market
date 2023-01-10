@@ -15,6 +15,7 @@
         <option value="$PROJECT_DIR$/market-blog-service-main/pom.xml" />
         <option value="$PROJECT_DIR$/market-authorization-service-dev/pom.xml" />
         <option value="$PROJECT_DIR$/market-ads-service-dev/pom.xml" />
+        <option value="$PROJECT_DIR$/market-statistics-service-dev/pom.xml" />
       </list>
     </option>
   </component>

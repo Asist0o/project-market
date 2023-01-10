@@ -6,14 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="market-documentation-service" />
+        <module name="social-market-service" />
+        <module name="eureka-server" />
+        <module name="market-statistics-service" />
         <module name="files-storage-service" />
         <module name="market-authorization-service" />
-        <module name="market-documentation-service" />
         <module name="ads-service" />
         <module name="email-service" />
-        <module name="social-market-service" />
         <module name="blog-service" />
-        <module name="eureka-server" />
         <module name="microservice-initializer" />
         <module name="gateway" />
         <module name="deal-service" />
@@ -30,6 +31,7 @@
       <module name="gateway" target="17" />
       <module name="market-authorization-service" target="16" />
       <module name="market-documentation-service" target="17" />
+      <module name="market-statistics-service" target="18" />
       <module name="microservice-initializer" target="17" />
       <module name="profiles-service" target="16" />
       <module name="social-market-service" target="1.5" />
@@ -46,6 +48,7 @@
       <module name="gateway" options="-parameters" />
       <module name="market-authorization-service" options="-parameters" />
       <module name="market-documentation-service" options="-parameters" />
+      <module name="market-statistics-service" options="-parameters" />
       <module name="microservice-initializer" options="-parameters" />
       <module name="profiles-service" options="-parameters" />
     </option>
